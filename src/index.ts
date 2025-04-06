@@ -1,12 +1,13 @@
 import {connectDB} from "./config/data-source";
-const express = require("express");
+import * as express from "express";
+import * as dotenv from "dotenv";
 import { Request, Response } from "express";
 import * as dotenv from "dotenv";
 import "reflect-metadata";
 import { errorHandler } from "./middleware/errorHandler";
 import { authRouter } from "./routes/auth.routes";
-const swaggerJSDoc = require("swagger-jsdoc");
-const swaggerUi = require("swagger-ui-express");
+import * as swaggerJSDoc from "swagger-jsdoc";
+import * as swaggerUi from "swagger-ui-express";
 import * as fs from "fs";
 
 // Importer les routes
@@ -33,7 +34,7 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
 
 // Middlewares
-//app.use(cors());
+//app.use(cors()); 
 app.use(express.json());
 
 // Routes avec préfixe '/api'
