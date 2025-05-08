@@ -20,9 +20,9 @@ const isDev = process.env.NODE_ENV === "dev"
 export const AppDataSource = new DataSource({
   type: "postgres",
   url: process.env.DATABASE_URL || process.env.POSTGRES_URL,
-  synchronize: isDev,
+  synchronize: isDev ||process.env.NODE_ENV == 'test',
   logging: isDev,
-  ssl: !isDev ? { rejectUnauthorized: false } : false, // important pour Neon
+  ssl: !isDev || process.env.NODE_ENV == 'test' ? { rejectUnauthorized: false } : false, // important pour Neon
   entities: [
     Organisation,
     Universite,
