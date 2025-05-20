@@ -25,8 +25,8 @@ export class DepartementService {
         });
     }
 
-    async getAllDepartements(): Promise<Departement[]> {
-        return await this.departementRepository.find({ relations: {programs: true,} });
+    async getAllDepartements(order: 'asc' | 'desc' = 'desc'): Promise<Departement[]> {
+        return await this.departementRepository.find({ order: { updatedAt: order.toUpperCase() as 'ASC' | 'DESC' }, relations: {programs: true,} });
     }
 
     async updateDepartement(id: string, data: Partial<CreateDepartementDto>): Promise<Departement | null> {

@@ -25,8 +25,8 @@ export class ProgrammeService {
         });
     }
 
-    async getAllProgrammes(): Promise<Programme[]> {
-        return await this.programmeRepository.find({ relations: {courses: true} });
+    async getAllProgrammes(order: 'asc' | 'desc' = 'desc'): Promise<Programme[]> {
+        return await this.programmeRepository.find({ order: { updatedAt: order.toUpperCase() as 'ASC' | 'DESC' }, relations: {courses: true} });
     }
 
     async updateProgramme(id: string, data: Partial<CreateProgrammeDto>): Promise<Programme | null> {
