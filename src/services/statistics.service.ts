@@ -7,7 +7,7 @@ import {
   StatisticsRep,
 } from "../dto/statistics.dto";
 import { AppDataSource } from "../config/data-source";
-import { Between, FindOptionsWhere } from "typeorm";
+import { Between } from "typeorm";
 import { Programme } from "../entity/Programme.entity";
 import { Departement } from "../entity/Departement.entity";
 import { Universite } from "../entity/Universite.entity";
@@ -26,7 +26,6 @@ export class StatisticsService {
       let whereClause: any = {};
       let whereClassSession: any = {};
       let whereCourse: any = {};
-
       if (param?.status) {
         whereClause.status = param.status;
       }
@@ -36,8 +35,8 @@ export class StatisticsService {
 
       if (param?.dateRange?.start && param?.dateRange?.end) {
         whereClassSession.date = Between(
-          param.dateRange.start,
-          param.dateRange.end
+          new Date(param.dateRange.start),
+          new Date(param.dateRange.end)
         );
       }
 
@@ -188,7 +187,7 @@ export class StatisticsService {
       if (param?.dateRange?.start && param?.dateRange?.end) {
         emargementWhere.classSession = {
           ...emargementWhere.classSession,
-          date: Between(param.dateRange.start, param.dateRange.end),
+          date: Between(new Date(param.dateRange.start), new Date(param.dateRange.end)),
         };
       }
 
