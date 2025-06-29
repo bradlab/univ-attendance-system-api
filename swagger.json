@@ -1907,6 +1907,11 @@
         "tags": [
           "Statistics"
         ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get general statistics (émargement, taux de présence, cours, validations en attente)",
         "parameters": [
           {
@@ -2001,6 +2006,11 @@
         "tags": [
           "Statistics"
         ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "summary": "Get admin statistics (programmes, départements, cours, universités, professeurs, émargements)",
         "parameters": [
           {
@@ -2060,6 +2070,11 @@
       "get": {
         "tags": [
           "Statistics"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "summary": "Get statistics for a specific professor",
         "parameters": [
