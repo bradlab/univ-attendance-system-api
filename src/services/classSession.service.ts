@@ -42,7 +42,7 @@ export class ClassSessionService {
             relations: { academicYear: true, course: true, professor: true, classRepresentative: true },
             select: { 
                 professor: {id: true, name: true, role: true, email: true, phone: true},
-                class: {id: true, name: true, role: true, email: true, phone: true},
+                classRepresentative: {id: true, name: true, role: true, email: true, phone: true},
             }
         });
     }
