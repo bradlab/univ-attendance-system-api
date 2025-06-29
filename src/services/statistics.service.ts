@@ -3,6 +3,7 @@ import { Course } from "../entity/Course.entity";
 import {
   AdminStatQueryDto,
   AdminStatRep,
+  BulkDepartement,
   StatisticsQueryDto,
   StatisticsRep,
 } from "../dto/statistics.dto";
@@ -20,6 +21,50 @@ export class StatisticsService {
   private readonly departmentRepo = AppDataSource.getRepository(Departement);
   private readonly universityRepo = AppDataSource.getRepository(Universite);
   private readonly userRepo = AppDataSource.getRepository(User);
+
+  async addBulkDepartments(datum: BulkDepartement[]): Promise<boolean> {
+    try {
+      const courseList: Course[] = [];
+      for (const departmentDdata of datum) {
+        const university = await this.universityRepo.findOneBy({ id: departmentDdata.universityId });
+        if (university) {
+          const department = new Departement();
+          department.name = departmentDdata.name;
+          department.university = university;
+          const newDepartment = await this.departmentRepo.save(department);
+          if (newDepartment && departmentDdata.programmes?.length > 0) {
+            for (const programData of departmentDdata.programmes) {
+              const programme = new Programme();
+              programme.name = programData.name;
+              programme.departement = newDepartment;
+              const newProgram = await this.programRepo.save(programme);
+              if (newProgram && programData.cours?.length > 0) {
+                for (const courseData of programData.cours) {
+                  const course = new Course();
+                  course.name = courseData.name;
+                  course.volumeHoraire = courseData.volumeHoraire;
+                  course.programme = newProgram;
+                  const savedCourse = await this.courseRepo.save(course);
+                  if (savedCourse) {
+                    courseList.push(savedCourse);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+  
+      if (courseList.length > 0) {
+        await this.courseRepo.save(courseList);
+      }
+      return true;
+    } catch (error) {
+      console.log('ERROR::addBulkDepartments', error)
+      return false;
+    }
+  }
+
 
   async getStatistics(param?: StatisticsQueryDto): Promise<StatisticsRep> {
     try {

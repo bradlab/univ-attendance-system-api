@@ -34,6 +34,18 @@ export interface AdminStatRep {
   totalEmargements: number;
 }
 
+export interface BulkDepartement {
+    name: string;
+    universityId: string;
+    programmes: {
+        name: string;
+        cours: {
+            name: string;
+            volumeHoraire: number;
+        }[]
+    }[]
+}
+
 class DateRangeDto {
   @IsOptional()
   @IsDateString()
