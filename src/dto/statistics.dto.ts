@@ -1,4 +1,12 @@
-import { IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID, ValidateNested } from "class-validator";
+import {
+  IsDateString,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  ValidateNested,
+} from "class-validator";
 import { EmargementStatus } from "../entity/Emargement.entity";
 import { Type } from "class-transformer";
 
@@ -10,11 +18,20 @@ import { Type } from "class-transformer";
  * @property totalCourses - The total number of courses.
  * @property pendingEmargementValidations - The number of emargement validations that are still pending.
  */
-export interface StatisticsRepDto {
+export interface StatisticsRep {
   totalEmargements: number;
   professeurPresenceRate: number;
   totalCourses: number;
   pendingEmargementValidations: number;
+}
+
+export interface AdminStatRep {
+  totalProgrammes: number;
+  totalDepartements: number;
+  totalCourses: number;
+  totalUniversities: number;
+  totalProfesseurs: number;
+  totalEmargements: number;
 }
 
 class DateRangeDto {
@@ -27,33 +44,49 @@ class DateRangeDto {
   end: Date;
 }
 export class StatisticsQueryDto {
-    @IsNotEmpty()
-    @IsUUID()
-    @IsString()
-    universityId: string;
+  @IsNotEmpty()
+  @IsString()
+  @IsUUID()
+  universityId: string;
 
-    @IsOptional()
-    @IsString()
-    @IsEnum(EmargementStatus)
-    status: EmargementStatus;
+  @IsOptional()
+  @IsString()
+  @IsEnum(EmargementStatus)
+  status: EmargementStatus;
 
-    @IsOptional()
-    @IsString()
-    @IsUUID()
-    professorId: string;
+  @IsOptional()
+  @IsString()
+  @IsUUID()
+  professorId: string;
 
-    @IsOptional()
-    @IsString()
-    @IsUUID()
-    departmentId: string;
+  @IsOptional()
+  @IsString()
+  @IsUUID()
+  departmentId: string;
 
-    @IsOptional()
-    @IsString()
-    @IsUUID()
-    courseId: string;
+  @IsOptional()
+  @IsString()
+  @IsUUID()
+  courseId: string;
 
-    @IsOptional()
-    @ValidateNested()
-    @Type(() => DateRangeDto)
-    dateRange: DateRangeDto
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DateRangeDto)
+  dateRange: DateRangeDto;
+}
+export class AdminStatQueryDto {
+  @IsNotEmpty()
+  @IsUUID()
+  @IsString()
+  universityId: string;
+
+  @IsOptional()
+  @IsString()
+  @IsUUID()
+  departmentId: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DateRangeDto)
+  dateRange: DateRangeDto;
 }

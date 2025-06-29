@@ -1,8 +1,18 @@
 import { Request, Response } from "express";
 import { StatisticsService } from "../services/statistics.service";
-import { StatisticsQueryDto } from "../dto/statistics.dto";
+import { AdminStatQueryDto, StatisticsQueryDto } from "../dto/statistics.dto";
 
 const statisticsService = new StatisticsService();
+
+export const getAdminStatistics = async (req: Request, res: Response) => {
+  try {
+    const param = req.query as unknown as AdminStatQueryDto;
+    const stats = await statisticsService.getAdminStatistics(param);
+    res.json(stats);
+  } catch (error) {
+    res.status(500).json({ message: "Erreur lors de la récupération des statistiques", error });
+  }
+};
 
 export const getStatistics = async (req: Request, res: Response) => {
   try {
