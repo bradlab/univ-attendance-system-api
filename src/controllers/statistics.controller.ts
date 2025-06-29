@@ -19,6 +19,6 @@ export const getProfStatistics = async (req: Request, res: Response) => {
     const stats = await statisticsService.getProfStatistics(req.params.id);
     res.json(stats);
   } catch (error) {
-    res.status(500).json({ message: "Erreur lors de la récupération des statistiques", error });
+    res.status(500).json({ message: "Erreur lors de la récupération des statistiques du prof", error });
   }
 };
