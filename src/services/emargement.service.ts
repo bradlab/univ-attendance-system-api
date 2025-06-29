@@ -25,14 +25,20 @@ export class EmargementService {
     async getEmargementById(id: string): Promise<Emargement | null> {
         return await this.emargementRepository.findOne({
             where: { id },
-            relations: { classSession: true, professor: true}
+            relations: { classSession: true, professor: true },
+            select: { 
+                professor: {id: true, name: true, role: true, email: true, phone: true},
+            }
         });
     }
 
     async getAllEmargements(): Promise<Emargement[]> {
         return await this.emargementRepository.find({
             order: { updatedAt: "DESC" },
-            relations: { classSession: true, professor: true}
+            relations: { classSession: true, professor: true},
+            select: { 
+                professor: {id: true, name: true, role: true, email: true, phone: true},
+            }
         });
     }
 

@@ -83,6 +83,8 @@ export class StatisticsService {
           new Date(param.dateRange.start),
           new Date(param.dateRange.end)
         );
+
+        whereCourse.classSessions = { date: Between(new Date(param.dateRange.start), new Date(param.dateRange.end) ) };
       }
 
       // whereCourse
@@ -128,16 +130,18 @@ export class StatisticsService {
 
       // Taux de présence d'un professeur (si id fourni)
       let professeurPresenceRate = 0;
-      if (param?.professorId) {
-        const presentProfEmargements = await this.emargementRepo.count({
-          where: {
-            ...whereClause,
-            status: EmargementStatus.PRESENT,
-          },
-        });
-        professeurPresenceRate =
-          totalEmargements > 0 ? presentProfEmargements / totalEmargements : 0;
-      }
+      const presentProfEmargements = await this.emargementRepo.count({
+        where: {
+          ...whereClause,
+          status: EmargementStatus.PRESENT,
+        },
+      });
+      console.log('presentProfEmargements ==== ', presentProfEmargements);
+      professeurPresenceRate =
+        totalEmargements > 0
+          ? Math.round((presentProfEmargements * 100 / totalEmargements) * 100) / 100
+          : 0;
+
 
       return {
         totalEmargements,
@@ -189,7 +193,7 @@ export class StatisticsService {
       });
       professeurPresenceRate =
         totalProfEmargements > 0
-          ? presentProfEmargements / totalProfEmargements
+          ? Math.round((presentProfEmargements * 100 / totalEmargements) * 100) / 100
           : 0;
     }
 
@@ -234,6 +238,7 @@ export class StatisticsService {
           ...emargementWhere.classSession,
           date: Between(new Date(param.dateRange.start), new Date(param.dateRange.end)),
         };
+        courseWhere.classSessions = { date: Between(new Date(param.dateRange.start), new Date(param.dateRange.end) ) };
       }
 
       const [
