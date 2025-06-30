@@ -28,7 +28,7 @@ export const AppDataSource = new DataSource({
     password: config.password,
     database: config.database,
     synchronize: isDev,
-    logging: false, // TODO: change to isDev
+    logging: isDev,
     ssl: !isDev ? {
         rejectUnauthorized: false,
     } : false,

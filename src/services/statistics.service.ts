@@ -8,7 +8,7 @@ import {
   StatisticsRep,
 } from "../dto/statistics.dto";
 import { AppDataSource } from "../config/data-source";
-import { Between } from "typeorm";
+import { Between, In } from "typeorm";
 import { Programme } from "../entity/Programme.entity";
 import { Departement } from "../entity/Departement.entity";
 import { Universite } from "../entity/Universite.entity";
@@ -26,7 +26,9 @@ export class StatisticsService {
     try {
       const courseList: Course[] = [];
       for (const departmentDdata of datum) {
-        const university = await this.universityRepo.findOneBy({ id: departmentDdata.universityId });
+        const university = await this.universityRepo.findOneBy({
+          id: departmentDdata.universityId,
+        });
         if (university) {
           const department = new Departement();
           department.name = departmentDdata.name;
@@ -54,17 +56,16 @@ export class StatisticsService {
           }
         }
       }
-  
+
       if (courseList.length > 0) {
         await this.courseRepo.save(courseList);
       }
       return true;
     } catch (error) {
-      console.log('ERROR::addBulkDepartments', error)
+      console.log("ERROR::addBulkDepartments", error);
       return false;
     }
   }
-
 
   async getStatistics(param?: StatisticsQueryDto): Promise<StatisticsRep> {
     try {
@@ -84,7 +85,12 @@ export class StatisticsService {
           new Date(param.dateRange.end)
         );
 
-        whereCourse.classSessions = { date: Between(new Date(param.dateRange.start), new Date(param.dateRange.end) ) };
+        whereCourse.classSessions = {
+          date: Between(
+            new Date(param.dateRange.start),
+            new Date(param.dateRange.end)
+          ),
+        };
       }
 
       // whereCourse
@@ -100,8 +106,8 @@ export class StatisticsService {
             id: param.universityId,
           };
         } else {
-          whereCourse.programme.departement = {
-            university: { id: param.universityId },
+          whereCourse.programme = {
+            departement: {university: { id: param.universityId }},
           };
         }
       }
@@ -125,10 +131,17 @@ export class StatisticsService {
 
       // Nombre de validations d'émargement en attente (filtré si param)
       const pendingEmargementValidations = await this.emargementRepo.count({
-        where: { ...whereClause, status: EmargementStatus.PENDING },
+        where: {
+          ...whereClause,
+          status: In([
+            EmargementStatus.PENDING,
+            EmargementStatus.CLASS_HEADER_CONFIRMED,
+            EmargementStatus.SUPERVISOR_CONFIRMED,
+          ]),
+        },
       });
 
-      // Taux de présence d'un professeur (si id fourni)
+      // Taux de présence global des professeurs
       let professeurPresenceRate = 0;
       const presentProfEmargements = await this.emargementRepo.count({
         where: {
@@ -136,12 +149,12 @@ export class StatisticsService {
           status: EmargementStatus.PRESENT,
         },
       });
-      console.log('presentProfEmargements ==== ', presentProfEmargements);
       professeurPresenceRate =
         totalEmargements > 0
-          ? Math.round((presentProfEmargements * 100 / totalEmargements) * 100) / 100
+          ? Math.round(
+              ((presentProfEmargements * 100) / totalEmargements) * 100
+            ) / 100
           : 0;
-
 
       return {
         totalEmargements,
@@ -175,27 +188,30 @@ export class StatisticsService {
     const pendingEmargementValidations = await this.emargementRepo.count({
       where: {
         professor: { id: professeurId },
-        status: EmargementStatus.PENDING,
+        status: In([
+          EmargementStatus.PENDING,
+          EmargementStatus.CLASS_HEADER_CONFIRMED,
+          EmargementStatus.SUPERVISOR_CONFIRMED,
+        ]),
       },
     });
 
-    // Taux de présence d'un professeur (si id fourni)
     let professeurPresenceRate = 0;
-    if (professeurId) {
-      const totalProfEmargements = await this.emargementRepo.count({
-        where: { professor: { id: professeurId } },
-      });
-      const presentProfEmargements = await this.emargementRepo.count({
-        where: {
-          professor: { id: professeurId },
-          status: EmargementStatus.PRESENT,
-        },
-      });
-      professeurPresenceRate =
-        totalProfEmargements > 0
-          ? Math.round((presentProfEmargements * 100 / totalEmargements) * 100) / 100
-          : 0;
-    }
+    const totalProfEmargements = await this.emargementRepo.count({
+      where: { professor: { id: professeurId } },
+    });
+    const presentProfEmargements = await this.emargementRepo.count({
+      where: {
+        professor: { id: professeurId },
+        status: EmargementStatus.PRESENT,
+      },
+    });
+    professeurPresenceRate =
+      totalProfEmargements > 0
+        ? Math.round(
+            ((presentProfEmargements * 100) / totalEmargements) * 100
+          ) / 100
+        : 0;
 
     return {
       totalEmargements,
@@ -236,9 +252,17 @@ export class StatisticsService {
       if (param?.dateRange?.start && param?.dateRange?.end) {
         emargementWhere.classSession = {
           ...emargementWhere.classSession,
-          date: Between(new Date(param.dateRange.start), new Date(param.dateRange.end)),
+          date: Between(
+            new Date(param.dateRange.start),
+            new Date(param.dateRange.end)
+          ),
         };
-        courseWhere.classSessions = { date: Between(new Date(param.dateRange.start), new Date(param.dateRange.end) ) };
+        courseWhere.classSessions = {
+          date: Between(
+            new Date(param.dateRange.start),
+            new Date(param.dateRange.end)
+          ),
+        };
       }
 
       const [

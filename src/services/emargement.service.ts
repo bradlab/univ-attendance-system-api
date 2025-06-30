@@ -68,8 +68,8 @@ export class EmargementService {
         const emargement = await this.getEmargementById(id);
         if (emargement) {
             if (
-                status === EmargementStatus.CLASS_HEADER_CONFIRMED && emargement.status === EmargementStatus.SUPERVISOR_CONFIRMED 
-                || status === EmargementStatus.SUPERVISOR_CONFIRMED && emargement.status === EmargementStatus.CLASS_HEADER_CONFIRMED
+                (status === EmargementStatus.CLASS_HEADER_CONFIRMED && emargement.status === EmargementStatus.SUPERVISOR_CONFIRMED) 
+                || (status === EmargementStatus.SUPERVISOR_CONFIRMED && emargement.status === EmargementStatus.CLASS_HEADER_CONFIRMED)
             ) {
                 emargement.status = EmargementStatus.PRESENT;
             } else if (emargement.status === EmargementStatus.PENDING && status !== EmargementStatus.PENDING) { // oblige les deux validations
